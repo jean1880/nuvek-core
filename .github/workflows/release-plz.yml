@@ -1,0 +1,68 @@
+name: release-plz
+
+# release-pr opens or updates the release pull request (version bumps and CHANGELOG entries) on
+# every push to master. release publishes to crates.io, tags each crate and creates its GitHub
+# Release; it only publishes versions not yet on crates.io, so it acts once that pull request is
+# merged. Both are gated by the repository variable PUBLISH, which is never set in staging.
+
+on:
+  push:
+    branches: [master]
+
+# One release run at a time per branch, and a running one is never cancelled half-way through a
+# publish.
+concurrency:
+  group: release-plz-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  release-pr:
+    name: release PR
+    if: vars.PUBLISH == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: release-plz/action@b2baf303c463c223526d52a8a91b0777f052cf3f # v0.5.146
+        with:
+          command: release-pr
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
+
+  # The full CI gate (fmt, clippy, tests, docs, MSRV, cargo-deny, gitleaks) on the commit being
+  # released.
+  gate:
+    if: vars.PUBLISH == 'true'
+    permissions:
+      contents: read
+    uses: ./.github/workflows/ci.yml
+
+  release:
+    name: release
+    if: vars.PUBLISH == 'true'
+    needs: gate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: release-plz/action@b2baf303c463c223526d52a8a91b0777f052cf3f # v0.5.146
+        with:
+          command: release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}

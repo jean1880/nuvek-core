@@ -1,0 +1,5 @@
+#!/bin/sh
+# Enable with `git config core.hooksPath .githooks`. Fast checks only; the tests run in CI.
+set -e
+gitleaks protect --staged --redact --no-banner
+cargo fmt --all -- --check

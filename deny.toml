@@ -1,0 +1,54 @@
+# cargo-deny policy (https://embarkstudios.github.io/cargo-deny/), checked in CI by
+# .github/workflows/ci.yml. Locally: `cargo deny check`.
+
+[graph]
+# The crates target Linux; Windows- or macOS-only crates never reach a consumer.
+targets = ["x86_64-unknown-linux-gnu", "aarch64-unknown-linux-gnu"]
+all-features = true
+
+[advisories]
+# Every RustSec vulnerability fails; unmaintained and yanked crates fail too, but only for the
+# crates we depend on directly or transitively.
+unmaintained = "all"
+yanked = "deny"
+ignore = [
+    # Unmaintained (not vulnerable) crates that reach the tree only through neo4rs 0.8, the Bolt
+    # client behind nuvek-neo4j. Drop these when neo4rs does.
+    { id = "RUSTSEC-2025-0012", reason = "backoff, via neo4rs 0.8; no maintained neo4rs release drops it" },
+    { id = "RUSTSEC-2024-0384", reason = "instant, via neo4rs 0.8 (backoff); same" },
+    { id = "RUSTSEC-2024-0436", reason = "paste, a proc-macro of neo4rs 0.8; compile time only" },
+    { id = "RUSTSEC-2025-0134", reason = "rustls-pemfile, via neo4rs 0.8; a thin wrapper over rustls-pki-types" },
+]
+
+[licenses]
+# Permissive licences compatible with an MIT library. A new licence in the tree fails the check
+# until it is reviewed and added here.
+allow = [
+    "MIT",
+    "Apache-2.0",
+    "Apache-2.0 WITH LLVM-exception",
+    "BSD-2-Clause",
+    "Unicode-3.0",
+    "Zlib",
+    # The TLS stack (reqwest → rustls): ring, rustls-webpki and untrusted (ISC), subtle
+    # (BSD-3-Clause) and the Mozilla root certificates in webpki-roots (CDLA-Permissive-2.0).
+    "ISC",
+    "BSD-3-Clause",
+    "CDLA-Permissive-2.0",
+]
+unused-allowed-license = "allow"
+confidence-threshold = 0.9
+
+[bans]
+# Duplicate versions are reported without failing. Wildcard version requirements are refused
+# outright, except our own path crates.
+multiple-versions = "warn"
+wildcards = "deny"
+allow-wildcard-paths = true
+highlight = "all"
+
+[sources]
+unknown-registry = "deny"
+unknown-git = "deny"
+allow-registry = ["https://github.com/rust-lang/crates.io-index"]
+allow-git = []

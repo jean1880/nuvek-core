@@ -1,0 +1,52 @@
+{
+  "response": "Yes",
+  "done_reason": "stop",
+  "logprobs": [
+    {
+      "token": "Yes",
+      "logprob": -0.2379646748304367,
+      "top_logprobs": [
+        {
+          "token": "Yes",
+          "logprob": -0.2379646748304367
+        },
+        {
+          "token": "No",
+          "logprob": -1.6931439638137817
+        },
+        {
+          "token": "yes",
+          "logprob": -3.908946990966797
+        },
+        {
+          "token": "no",
+          "logprob": -5.114189147949219
+        },
+        {
+          "token": "<think>",
+          "logprob": -7.099945068359375
+        },
+        {
+          "token": "The",
+          "logprob": -8.621177673339844
+        },
+        {
+          "token": " Yes",
+          "logprob": -8.894256591796875
+        },
+        {
+          "token": " yes",
+          "logprob": -9.049949645996094
+        },
+        {
+          "token": "A",
+          "logprob": -9.346015930175781
+        },
+        {
+          "token": "Answer",
+          "logprob": -9.485000610351562
+        }
+      ]
+    }
+  ]
+}

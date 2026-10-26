@@ -1,0 +1,37 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/nuvek-core",
+    "crates/nuvek-chroma",
+    "crates/nuvek-neo4j",
+    "crates/nuvek-ollama",
+]
+
+[workspace.package]
+edition = "2021"
+rust-version = "1.90"
+license = "MIT"
+repository = "https://github.com/jean1880/nuvek-core"
+homepage = "https://github.com/jean1880/nuvek-core"
+
+# Members pull these with `foo.workspace = true` and never pin a version themselves.
+[workspace.dependencies]
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "io-std", "io-util", "process", "time", "signal"] }
+reqwest = { version = "0.12", default-features = false, features = ["json", "rustls-tls"] }
+serde = { version = "1", features = ["derive"] }
+# preserve_order: Value::Object keeps insertion order instead of sorting keys, so a rewritten
+# JSON document diffs only where it changed.
+serde_json = { version = "1", features = ["preserve_order"] }
+toml = "0.8"
+anyhow = "1"
+thiserror = "2"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+neo4rs = "0.8"
+sha2 = "0.10"
+md-5 = "0.10"
+chrono = { version = "0.4", features = ["serde"] }
+regex = "1"
+fancy-regex = "0.14"
+base64 = "0.22"
+libc = "0.2"

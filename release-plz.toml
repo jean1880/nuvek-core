@@ -1,0 +1,12 @@
+# release-plz configuration (https://release-plz.dev/docs/config).
+# Publishing is gated by .github/workflows/release-plz.yml (repository variable PUBLISH).
+
+[workspace]
+# Each crate keeps its own CHANGELOG.md, in Keep a Changelog format.
+changelog_update = true
+# Tag every released crate as `<crate>-v<version>` and create its GitHub Release.
+git_tag_enable = true
+git_release_enable = true
+# Refuse a version bump that hides an API break.
+semver_check = true
+publish = true

@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <!-- nuvek-core icon. Original artwork for nuvek-core, built on the author's eight-tooth gear
+       mark: the gear, in the mark's grey, as the hero, held in a concentric ring. -->
+  <defs>
+    <linearGradient id="core-rim" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#a08cff"/>
+      <stop offset="1" stop-color="#5a44c8"/>
+    </linearGradient>
+    <linearGradient id="core-screen" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2b2442"/>
+      <stop offset="1" stop-color="#181425"/>
+    </linearGradient>
+    <linearGradient id="core-gear" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#a29ea4"/>
+      <stop offset="1" stop-color="#8a868c"/>
+    </linearGradient>
+  </defs>
+  <!-- depth: the same tile, dropped and darkened (GNOME HIG front-facing depth) -->
+  <rect x="12" y="17" width="104" height="104" rx="18" fill="#0d0a16" opacity="0.55"/>
+  <!-- tile rim -->
+  <rect x="12" y="12" width="104" height="104" rx="18" fill="url(#core-rim)"/>
+  <!-- screen -->
+  <rect x="18" y="18" width="92" height="92" rx="13" fill="url(#core-screen)"/>
+  <!-- soft top highlight -->
+  <rect x="26" y="21" width="76" height="2" rx="1" fill="#ffffff" opacity="0.07"/>
+  <!-- outer core ring -->
+  <circle cx="64" cy="64" r="39" fill="none" stroke="#5b9cf6" stroke-width="5" opacity="0.9"/>
+  <!-- the gear: eight trapezoid teeth and a hollow hub -->
+  <path transform="translate(64 64) scale(0.78)" fill="url(#core-gear)" fill-rule="evenodd"
+        d="M-7.00 -29.17 L-5.91 -39.56 L5.91 -39.56 L7.00 -29.17 A30 30 0 0 1 15.67 -25.58 L23.79 -32.15 L32.15 -23.79 L25.58 -15.67 A30 30 0 0 1 29.17 -7.00 L39.56 -5.91 L39.56 5.91 L29.17 7.00 A30 30 0 0 1 25.58 15.67 L32.15 23.79 L23.79 32.15 L15.67 25.58 A30 30 0 0 1 7.00 29.17 L5.91 39.56 L-5.91 39.56 L-7.00 29.17 A30 30 0 0 1 -15.67 25.58 L-23.79 32.15 L-32.15 23.79 L-25.58 15.67 A30 30 0 0 1 -29.17 7.00 L-39.56 5.91 L-39.56 -5.91 L-29.17 -7.00 A30 30 0 0 1 -25.58 -15.67 L-32.15 -23.79 L-23.79 -32.15 L-15.67 -25.58 A30 30 0 0 1 -7.00 -29.17 Z M0 -13 A13 13 0 1 0 0 13 A13 13 0 1 0 0 -13 Z"/>
+</svg>

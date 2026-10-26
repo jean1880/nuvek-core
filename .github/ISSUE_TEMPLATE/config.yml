@@ -1,0 +1,9 @@
+# yaml-language-server: $schema=https://www.schemastore.org/github-issue-config.json
+blank_issues_enabled: false
+contact_links:
+  - name: Report a security vulnerability
+    url: https://github.com/jean1880/nuvek-core/security/advisories/new
+    about: Report it privately, never in a public issue. See SECURITY.md.
+  - name: Contributing guide
+    url: https://github.com/jean1880/nuvek-core/blob/master/CONTRIBUTING.md
+    about: How to report bugs, propose changes and open a pull request.

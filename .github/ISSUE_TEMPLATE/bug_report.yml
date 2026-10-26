@@ -1,0 +1,72 @@
+# yaml-language-server: $schema=https://www.schemastore.org/github-issue-forms.json
+name: Bug report
+description: Something in nuvek-core, nuvek-chroma, nuvek-neo4j or nuvek-ollama doesn't work as it should.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report this. A bug that can be reproduced gets fixed first.
+
+        **A security problem?** Don't file it here. Use [private vulnerability reporting](https://github.com/jean1880/nuvek-core/security/advisories/new) (see [SECURITY.md](https://github.com/jean1880/nuvek-core/blob/master/SECURITY.md)).
+
+  - type: checkboxes
+    id: preflight
+    attributes:
+      label: Before you start
+      options:
+        - label: I searched the [open and closed issues](https://github.com/jean1880/nuvek-core/issues?q=is%3Aissue) and found no report of this.
+          required: true
+        - label: I removed API keys, tokens, hostnames and anything else private from what I paste below.
+          required: true
+
+  - type: dropdown
+    id: crate
+    attributes:
+      label: Crate
+      multiple: true
+      options:
+        - nuvek-core
+        - nuvek-chroma
+        - nuvek-neo4j
+        - nuvek-ollama
+    validations:
+      required: true
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+    validations:
+      required: true
+
+  - type: textarea
+    id: repro
+    attributes:
+      label: Minimal reproduction
+      description: The smallest code that shows the problem, with the Cargo features you enable.
+      render: rust
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: The tag or commit you depend on, and `rustc --version`.
+      placeholder: "v1.0.0, rustc 1.90.0"
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Anything else
+      description: Error output, the service versions involved (ChromaDB, Neo4j, Ollama), or workarounds you found.

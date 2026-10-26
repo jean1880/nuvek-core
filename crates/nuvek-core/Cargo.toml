@@ -1,0 +1,64 @@
+[package]
+name = "nuvek-core"
+version = "1.0.0"
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+documentation = "https://docs.rs/nuvek-core"
+readme = "README.md"
+keywords = ["secrets", "redaction", "ssh", "journald", "prometheus"]
+categories = ["development-tools", "config", "os::unix-apis"]
+include = ["src/**/*.rs", "Cargo.toml", "README.md", "CHANGELOG.md", "LICENSE"]
+description = "Portable mechanism for small operational tools: environment primitives, a hardened SSH runner, secret scrubbing with a configurable secret-surface contract, a journald audit logger, Prometheus textfile telemetry and a bounded git runner. Names no host, path or deployment."
+
+# Everything a consumer might not want is optional. A crate that only redacts secrets should not
+# build reqwest, and one that only reads env vars should build almost nothing.
+[features]
+default = ["scrub", "log", "metrics", "git", "tracing"]
+# `env`, `error` and `util` are always present: they are the crate's spine and cost nothing.
+net = ["dep:reqwest", "dep:tokio"]
+ssh = []
+scrub = [
+    "dep:regex",
+    "dep:fancy-regex",
+    "dep:base64",
+    "dep:md-5",
+    "dep:serde_json",
+    # The secret-surface file read by `scrub::init`.
+    "dep:serde",
+    "dep:toml",
+]
+log = ["dep:chrono"]
+metrics = ["dep:serde", "dep:serde_json"]
+git = []
+tracing = ["dep:tracing-subscriber"]
+mcp = ["dep:tokio", "dep:serde_json"]
+hook = ["dep:serde_json"]
+digest = ["dep:sha2"]
+# OpenAI-compatible LLM gateway client with route counters (needs http + metrics).
+gateway = ["net", "metrics", "dep:serde_json"]
+
+[dependencies]
+anyhow.workspace = true
+# Process-group kill in `util::command_output_timeout`, and O_NONBLOCK for `scrub::init`.
+libc.workspace = true
+thiserror.workspace = true
+tracing.workspace = true
+
+base64 = { workspace = true, optional = true }
+chrono = { workspace = true, optional = true }
+fancy-regex = { workspace = true, optional = true }
+md-5 = { workspace = true, optional = true }
+regex = { workspace = true, optional = true }
+reqwest = { workspace = true, optional = true }
+serde = { workspace = true, optional = true }
+serde_json = { workspace = true, optional = true }
+sha2 = { workspace = true, optional = true }
+toml = { workspace = true, optional = true }
+tokio = { workspace = true, optional = true }
+tracing-subscriber = { workspace = true, optional = true }
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["rt-multi-thread", "macros", "test-util"] }

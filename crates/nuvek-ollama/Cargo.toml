@@ -1,0 +1,24 @@
+[package]
+name = "nuvek-ollama"
+version = "1.0.0"
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+documentation = "https://docs.rs/nuvek-ollama"
+readme = "README.md"
+keywords = ["ollama", "llm", "summarization", "json-schema", "local-llm"]
+categories = ["api-bindings", "web-programming::http-client"]
+# The fixtures are captured Ollama responses the unit tests read with `include_str!`.
+include = ["src/**/*.rs", "tests/fixtures/*.json", "Cargo.toml", "README.md", "CHANGELOG.md", "LICENSE"]
+description = "Local Ollama client: summarization, grammar-constrained JSON extraction, and closed-question decisions with log-probability confidence. Endpoint and model names are supplied by the caller."
+
+[dependencies]
+anyhow.workspace = true
+nuvek-core = { path = "../nuvek-core", version = "1", default-features = false, features = ["net", "gateway"] }
+reqwest.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+tokio.workspace = true
+tracing.workspace = true

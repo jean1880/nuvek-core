@@ -1,0 +1,25 @@
+[package]
+name = "nuvek-chroma"
+version = "1.0.0"
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+documentation = "https://docs.rs/nuvek-chroma"
+readme = "README.md"
+keywords = ["chromadb", "embeddings", "ollama", "rag", "semantic-cache"]
+categories = ["api-bindings", "database"]
+include = ["src/**/*.rs", "Cargo.toml", "README.md", "CHANGELOG.md", "LICENSE"]
+description = "ChromaDB v2 client with Ollama embeddings, a scoped semantic cache and HyDE. Endpoints, models and tenant path are supplied by the caller."
+
+[dependencies]
+chrono.workspace = true
+anyhow.workspace = true
+nuvek-core = { path = "../nuvek-core", version = "1", default-features = false, features = ["net", "metrics", "gateway"] }
+md-5.workspace = true
+reqwest.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+tokio.workspace = true
+tracing.workspace = true
