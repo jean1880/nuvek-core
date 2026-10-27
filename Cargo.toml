@@ -33,5 +33,5 @@ md-5 = "0.10"
 chrono = { version = "0.4", features = ["serde"] }
 regex = "1"
 fancy-regex = "0.14"
-base64 = "0.22"
+base64 = "0.23"
 libc = "0.2"
