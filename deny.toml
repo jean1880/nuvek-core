@@ -18,6 +18,12 @@ ignore = [
     { id = "RUSTSEC-2024-0384", reason = "instant, via neo4rs 0.8 (backoff); same" },
     { id = "RUSTSEC-2024-0436", reason = "paste, a proc-macro of neo4rs 0.8; compile time only" },
     { id = "RUSTSEC-2025-0134", reason = "rustls-pemfile, via neo4rs 0.8; a thin wrapper over rustls-pki-types" },
+    { id = "RUSTSEC-2026-0555", reason = "chrono-tz, via neo4rs 0.8; same" },
+    { id = "RUSTSEC-2026-0559", reason = "chrono-tz-build, a build dependency of chrono-tz via neo4rs 0.8; compile time only" },
+    # chrono itself is a direct dependency (nuvek-core's log timestamps, nuvek-chroma's records).
+    # Unmaintained, not vulnerable; moving to jiff or time changes public types, so it is its own
+    # change rather than a silent swap.
+    { id = "RUSTSEC-2026-0543", reason = "chrono: unmaintained, no advisory against its code; migration to jiff/time is a separate, API-visible change" },
 ]
 
 [licenses]
