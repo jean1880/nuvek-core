@@ -715,7 +715,10 @@ pub fn redact(text: &str) -> String {
 /// labelled as a secret by its key (`password: x`, `api_key=x`), the same in XML elements
 /// (`<ApiKey>…</ApiKey>`, as the *arr apps write) and JSON members (`"token": "…"`), and raw
 /// WireGuard keys (43 base64 chars + `=`), and the password in a URL's userinfo
-/// (`postgresql://user:pass@host`). Universal shapes, not one deployment's names.
+/// (`postgresql://user:pass@host`), JSON members inside an escaped JSON string
+/// (`{\"token\":\"…\"}`), and credential headers (`Authorization:`, `Proxy-Authorization:`,
+/// `Cookie:`, `Set-Cookie:`, masked to the end of the line). Universal shapes, not one
+/// deployment's names.
 /// Over-masking an `auth: true` is the accepted cost of failing toward masking.
 ///
 /// A key matches when it ENDS in a sensitive word, so compound names are caught (`sessionSecret`,
@@ -725,12 +728,28 @@ pub fn redact(text: &str) -> String {
 /// matches only alone or after a `_`/`-` separator (`db_pass`). Accepted cost: a camelCase
 /// `dbPass` is not caught.
 static CONFIG_SECRET_RES: LazyLock<Vec<(Regex, &'static str)>> = LazyLock::new(|| {
-    let key = r"(?:[A-Za-z0-9_-]*?(?:api[_-]?key|apikey|password|passwd|secret|token|private[_-]?key|private|preshared[_-]?key|auth)|(?:[A-Za-z0-9]*[_-])?pass)";
+    let key = r"(?:[A-Za-z0-9_-]*?(?:api[_-]?key|apikey|password|passwd|secret|token|private[_-]?key|private|preshared[_-]?key|authorization|auth|cookie)|(?:[A-Za-z0-9]*[_-])?pass)";
     let re = |p: String| Regex::new(&p).expect("CONFIG_SECRET_RES are valid compile-time patterns");
     vec![
         (
             re(format!(r#"(?i)("{key}"\s*:\s*)"[^"]*""#)),
             r#"$1"«REDACTED-SECRET»""#,
+        ),
+        // The same member inside an escaped JSON string (`{\"token\":\"…\"}`, as a log line or a
+        // JSON value holding JSON carries it). The value runs to the next unescaped `\"`: a quote
+        // inside it is `\\\"`, a backslash `\\`, tried in that order.
+        (
+            re(format!(
+                r#"(?i)(\\"{key}\\"\s*:\s*)\\"(?:\\\\\\"|\\\\|\\[^"]|[^\\"])*\\""#
+            )),
+            r#"$1\"«REDACTED-SECRET»\""#,
+        ),
+        // A credential header: the whole value to the end of the line, because it runs past one
+        // word (`Bearer <token>`, `a=1; b=2`). Before the key rule below, which would mask only
+        // the first word. Matches `> Authorization:` in `curl -v` output too.
+        (
+            re(r"(?i)(\b(?:proxy-)?authorization\s*:\s*|\b(?:set-)?cookie\s*:\s*)[^\r\n]+".into()),
+            "${1}«REDACTED-SECRET»",
         ),
         (
             re(format!(r"(?i)(<{key}>)[^<]*(</)")),
@@ -1247,6 +1266,55 @@ mod tests {
         assert_eq!(redact_config("bypass: true"), "bypass: true");
         assert_eq!(redact_config("compass=north"), "compass=north");
         assert_eq!(redact_config(&out), out, "idempotent on compound keys");
+    }
+
+    /// JSON inside a JSON string (`{\"token\":\"…\"}`) and credential headers carry no token
+    /// prefix and slipped past both the member and the key rules.
+    #[test]
+    fn redact_config_masks_escaped_json_and_credential_headers() {
+        let escaped = r#"{"msg":"{\"api_key\":\"esc-val-123\",\"user\":\"jd\"}"}"#; // gitleaks:allow
+        let out = redact_config(escaped);
+        assert!(!out.contains("esc-val-123"), "{out}");
+        assert!(out.contains(r#"\"user\":\"jd\""#), "neighbour lost: {out}");
+        assert!(
+            out.contains(r#"\"api_key\":\"«REDACTED-SECRET»\""#),
+            "{out}"
+        );
+        // An escaped quote inside the value does not end it early.
+        let inner = r#"{\"token\":\"a\\\"b-tail\"}"#;
+        assert!(
+            !redact_config(inner).contains("b-tail"),
+            "{}",
+            redact_config(inner)
+        );
+
+        for line in [
+            "Authorization: Bearer opaque-tok-0001",
+            "> authorization: Basic dXNlcjpwYXNz",
+            "Proxy-Authorization: Bearer opaque-tok-0001",
+            "Cookie: sid=opaque-tok-0001; theme=dark",
+            "< set-cookie: sid=opaque-tok-0001; Path=/",
+        ] {
+            let out = redact_config(line);
+            assert!(
+                !out.contains("opaque-tok-0001") && !out.contains("dXNlcjpwYXNz"),
+                "{line} -> {out}"
+            );
+            assert_eq!(redact_config(&out), out, "idempotent: {out}");
+        }
+        let json =
+            redact_config(r#"{"Authorization": "Bearer opaque-tok-0001", "Accept": "json"}"#);
+        assert!(
+            !json.contains("opaque-tok-0001") && json.contains(r#""Accept": "json""#),
+            "{json}"
+        );
+        // Only the header's own line is masked, and ordinary words survive.
+        assert_eq!(
+            redact_config("Cookie: a=1\nnext line"),
+            "Cookie: «REDACTED-SECRET»\nnext line"
+        );
+        assert_eq!(redact_config("cookies: 3"), "cookies: 3");
+        assert_eq!(redact_config("authorized: true"), "authorized: true");
     }
 
     #[test]
