@@ -6,6 +6,12 @@ All notable changes to `nuvek-core` are documented here. The format is based on
 
 ## [Unreleased]
 
+## [1.0.1](https://github.com/jean1880/nuvek-core/compare/nuvek-core-v1.0.0...nuvek-core-v1.0.1) - 2026-11-27
+
+### Fixed
+
+- *(scrub)* mask escaped JSON members and credential headers ([#10](https://github.com/jean1880/nuvek-core/pull/10))
+
 ## [1.0.0] - 2026-10-26
 
 First public release. The crate lives in its own repository (`jean1880/nuvek-core`), together
